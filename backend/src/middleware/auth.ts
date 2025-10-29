@@ -8,7 +8,8 @@ export const getUserFromToken = async (req: Request): Promise<IUser | null> => {
   if (!token) return null;
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
+    const jwtSecret = process.env.JWT_SECRET || '';
+    const decoded = jwt.verify(token, jwtSecret) as { userId: string };
     return await User.findById(decoded.userId);
   } catch (error) {
     return null;

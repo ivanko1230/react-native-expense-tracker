@@ -12,6 +12,7 @@ export type ExpenseCategory =
   | 'Other';
 
 export interface IExpense extends Document {
+  _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   amount: number;
   description: string;

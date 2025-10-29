@@ -6,6 +6,7 @@ import cors from 'cors';
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import { createContext } from './middleware/auth';
+import './types/env';
 
 const app: Express = express();
 

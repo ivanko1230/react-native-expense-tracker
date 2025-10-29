@@ -1,7 +1,15 @@
+import mongoose from 'mongoose';
 import User, { IUser } from '../models/User';
 import Expense, { IExpense, ExpenseCategory } from '../models/Expense';
 import jwt from 'jsonwebtoken';
 import { GraphQLContext } from '../types/context';
+import '../types/env';
+
+export interface SummaryItem {
+  category: string;
+  total: number;
+  count: number;
+}
 
 interface ExpenseArgs {
   startDate?: string;
@@ -50,7 +58,16 @@ const resolvers = {
       const user = context.user;
       if (!user) throw new Error('Authentication required');
 
-      const query: any = { userId: user._id };
+      interface QueryFilter {
+        userId: mongoose.Types.ObjectId;
+        date?: {
+          $gte?: Date;
+          $lte?: Date;
+        };
+        category?: string;
+      }
+
+      const query: QueryFilter = { userId: user._id };
       
       // Add date filters if provided
       if (args.startDate || args.endDate) {
@@ -98,7 +115,7 @@ const resolvers = {
       });
 
       // Group by category
-      const summary: Record<string, { category: string; total: number; count: number }> = expenses.reduce((acc, expense) => {
+      const summary: Record<string, SummaryItem> = expenses.reduce((acc: Record<string, SummaryItem>, expense: IExpense) => {
         const category = expense.category;
         if (!acc[category]) {
           acc[category] = { category, total: 0, count: 0 };
@@ -136,9 +153,10 @@ const resolvers = {
       await user.save();
 
       // Generate token
+      const jwtSecret = process.env.JWT_SECRET || '';
       const token = jwt.sign(
         { userId: user._id },
-        process.env.JWT_SECRET as string,
+        jwtSecret,
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
       );
 
@@ -169,9 +187,10 @@ const resolvers = {
       }
 
       // Generate token
+      const jwtSecret = process.env.JWT_SECRET || '';
       const token = jwt.sign(
         { userId: user._id },
-        process.env.JWT_SECRET as string,
+        jwtSecret,
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
       );
 
