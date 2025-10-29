@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,17 +8,76 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import { GET_EXPENSES, DELETE_EXPENSE } from '../services/graphql';
 import { format } from 'date-fns';
+import { isOnline, subscribeToNetworkStatus } from '../utils/networkUtils';
+import {
+  getExpensesLocally,
+  saveExpensesLocally,
+  addDeletedExpense,
+} from '../services/storageService';
+import { syncAll } from '../services/syncService';
 
 export default function ExpenseListScreen({ navigation }) {
-  const { data, loading, error, refetch } = useQuery(GET_EXPENSES);
-  const [deleteExpense] = useMutation(DELETE_EXPENSE, {
-    refetchQueries: [{ query: GET_EXPENSES }],
+  const [isNetworkOnline, setIsNetworkOnline] = useState(true);
+  const [localExpenses, setLocalExpenses] = useState([]);
+  const client = useApolloClient();
+
+  const { data, loading, error, refetch } = useQuery(GET_EXPENSES, {
+    skip: !isNetworkOnline,
+    fetchPolicy: 'network-only',
+    onCompleted: async (data) => {
+      if (data?.expenses) {
+        await saveExpensesLocally(data.expenses);
+      }
+    },
   });
 
-  const expenses = data?.expenses || [];
+  const [deleteExpense] = useMutation(DELETE_EXPENSE, {
+    refetchQueries: [{ query: GET_EXPENSES }],
+    onError: async (error) => {
+      // If offline, delete locally
+      if (!isNetworkOnline) {
+        const localExp = localExpenses.find((e) => e.id === error.variables?.id);
+        if (localExp) {
+          await addDeletedExpense(error.variables.id);
+          const updated = localExpenses.filter((e) => e.id !== error.variables.id);
+          setLocalExpenses(updated);
+          await saveExpensesLocally(updated);
+        }
+      }
+    },
+  });
+
+  useEffect(() => {
+    checkNetworkAndLoadData();
+    const unsubscribe = subscribeToNetworkStatus(async (online) => {
+      setIsNetworkOnline(online);
+      if (online) {
+        await syncAll(client);
+        refetch();
+      } else {
+        loadLocalData();
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  const checkNetworkAndLoadData = async () => {
+    const online = await isOnline();
+    setIsNetworkOnline(online);
+    if (!online) {
+      loadLocalData();
+    }
+  };
+
+  const loadLocalData = async () => {
+    const local = await getExpensesLocally();
+    setLocalExpenses(local);
+  };
+
+  const expenses = isNetworkOnline ? (data?.expenses || []) : localExpenses;
 
   const handleDelete = (id) => {
     Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
@@ -28,8 +87,17 @@ export default function ExpenseListScreen({ navigation }) {
         style: 'destructive',
         onPress: async () => {
           try {
-            await deleteExpense({ variables: { id } });
-            Alert.alert('Success', 'Expense deleted');
+            if (isNetworkOnline) {
+              await deleteExpense({ variables: { id } });
+              Alert.alert('Success', 'Expense deleted');
+            } else {
+              // Offline deletion
+              await addDeletedExpense(id);
+              const updated = expenses.filter((e) => e.id !== id);
+              setLocalExpenses(updated);
+              await saveExpensesLocally(updated);
+              Alert.alert('Success', 'Expense deleted (will sync when online)');
+            }
           } catch (err) {
             Alert.alert('Error', err.message);
           }

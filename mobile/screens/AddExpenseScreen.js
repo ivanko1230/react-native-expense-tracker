@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { useMutation } from '@apollo/client';
 import { CREATE_EXPENSE } from '../services/graphql';
+import { isOnline } from '../utils/networkUtils';
+import { addPendingExpense, saveExpensesLocally, getExpensesLocally } from '../services/storageService';
 
 const CATEGORIES = [
   'Food',
@@ -45,16 +47,38 @@ export default function AddExpenseScreen({ navigation }) {
       return;
     }
 
+    const expenseData = {
+      amount: amountValue,
+      description,
+      category,
+      date: new Date().toISOString(),
+    };
+
     try {
-      await createExpense({
-        variables: {
-          amount: amountValue,
-          description,
-          category,
-          date: new Date().toISOString(),
-        },
-      });
-      Alert.alert('Success', 'Expense saved!');
+      const online = await isOnline();
+      
+      if (online) {
+        // Online: Create via GraphQL
+        await createExpense({
+          variables: expenseData,
+        });
+        Alert.alert('Success', 'Expense saved!');
+      } else {
+        // Offline: Save locally and add to pending queue
+        const tempId = `temp_${Date.now()}`;
+        const localExpense = {
+          id: tempId,
+          ...expenseData,
+        };
+        
+        await addPendingExpense(localExpense);
+        const local = await getExpensesLocally();
+        local.push(localExpense);
+        await saveExpensesLocally(local);
+        
+        Alert.alert('Success', 'Expense saved offline (will sync when online)');
+      }
+      
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);
