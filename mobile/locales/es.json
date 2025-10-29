@@ -53,7 +53,12 @@
     "expenseSaved": "¡Gasto guardado!",
     "expenseUpdated": "¡Gasto actualizado!",
     "expenseSavedOffline": "Gasto guardado sin conexión (se sincronizará cuando esté en línea)",
-    "validAmount": "Por favor ingresa una cantidad válida"
+    "validAmount": "Por favor ingresa una cantidad válida",
+    "location": "Ubicación",
+    "captureLocation": "Capturar Ubicación Actual",
+    "locationCaptured": "Ubicación capturada",
+    "locationPermissionDenied": "Se requiere permiso de ubicación para capturar tu ubicación",
+    "locationError": "Error al capturar la ubicación"
   },
   "summary": {
     "title": "Resumen Mensual",
@@ -83,7 +88,15 @@
   },
   "tabs": {
     "expenses": "Gastos",
-    "summary": "Resumen"
+    "summary": "Resumen",
+    "map": "Mapa"
+  },
+  "map": {
+    "title": "Mapa de Gastos",
+    "expensesWithLocation": "gastos con ubicación",
+    "noLocations": "No hay gastos con datos de ubicación",
+    "addLocationHint": "Agrega gastos con ubicación para verlos en el mapa",
+    "errorLoading": "Error al cargar datos del mapa"
   },
   "settings": {
     "title": "Configuración",

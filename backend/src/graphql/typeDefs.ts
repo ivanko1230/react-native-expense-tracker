@@ -8,6 +8,18 @@ const typeDefs = gql`
     createdAt: String!
   }
 
+  type ExpenseLocation {
+    latitude: Float
+    longitude: Float
+    address: String
+  }
+
+  input ExpenseLocationInput {
+    latitude: Float
+    longitude: Float
+    address: String
+  }
+
   type Expense {
     id: ID!
     userId: ID!
@@ -15,6 +27,7 @@ const typeDefs = gql`
     description: String!
     category: String!
     date: String!
+    location: ExpenseLocation
     createdAt: String!
     updatedAt: String!
   }
@@ -46,8 +59,8 @@ const typeDefs = gql`
     login(email: String!, password: String!): AuthPayload!
     
     # Expense mutations
-    createExpense(amount: Float!, description: String!, category: String!, date: String!): Expense!
-    updateExpense(id: ID!, amount: Float, description: String, category: String, date: String): Expense!
+    createExpense(amount: Float!, description: String!, category: String!, date: String!, location: ExpenseLocationInput): Expense!
+    updateExpense(id: ID!, amount: Float, description: String, category: String, date: String, location: ExpenseLocationInput): Expense!
     deleteExpense(id: ID!): Boolean!
   }
 `;

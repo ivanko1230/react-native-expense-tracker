@@ -11,6 +11,12 @@ export type ExpenseCategory =
   | 'Travel'
   | 'Other';
 
+export interface IExpenseLocation {
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+}
+
 export interface IExpense extends Document {
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
@@ -18,6 +24,7 @@ export interface IExpense extends Document {
   description: string;
   category: ExpenseCategory;
   date: Date;
+  location?: IExpenseLocation;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,6 +68,23 @@ const expenseSchema = new Schema<IExpense>({
     type: Date,
     required: true,
     default: Date.now,
+  },
+  location: {
+    latitude: {
+      type: Number,
+      min: -90,
+      max: 90,
+    },
+    longitude: {
+      type: Number,
+      min: -180,
+      max: 180,
+    },
+    address: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+    },
   },
 }, {
   timestamps: true,

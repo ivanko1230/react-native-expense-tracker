@@ -53,7 +53,12 @@
     "expenseSaved": "Expense saved!",
     "expenseUpdated": "Expense updated!",
     "expenseSavedOffline": "Expense saved offline (will sync when online)",
-    "validAmount": "Please enter a valid amount"
+    "validAmount": "Please enter a valid amount",
+    "location": "Location",
+    "captureLocation": "Capture Current Location",
+    "locationCaptured": "Location captured",
+    "locationPermissionDenied": "Location permission is required to capture your location",
+    "locationError": "Failed to capture location"
   },
   "summary": {
     "title": "Monthly Summary",
@@ -83,7 +88,15 @@
   },
   "tabs": {
     "expenses": "Expenses",
-    "summary": "Summary"
+    "summary": "Summary",
+    "map": "Map"
+  },
+  "map": {
+    "title": "Expense Map",
+    "expensesWithLocation": "expenses with location",
+    "noLocations": "No expenses with location data",
+    "addLocationHint": "Add expenses with location to see them on the map",
+    "errorLoading": "Error loading map data"
   },
   "settings": {
     "title": "Settings",

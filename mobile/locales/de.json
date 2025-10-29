@@ -53,7 +53,12 @@
     "expenseSaved": "Ausgabe gespeichert!",
     "expenseUpdated": "Ausgabe aktualisiert!",
     "expenseSavedOffline": "Ausgabe offline gespeichert (wird online synchronisiert)",
-    "validAmount": "Bitte geben Sie einen gültigen Betrag ein"
+    "validAmount": "Bitte geben Sie einen gültigen Betrag ein",
+    "location": "Standort",
+    "captureLocation": "Aktuellen Standort Erfassen",
+    "locationCaptured": "Standort erfasst",
+    "locationPermissionDenied": "Standortberechtigung ist erforderlich, um Ihren Standort zu erfassen",
+    "locationError": "Standort konnte nicht erfasst werden"
   },
   "summary": {
     "title": "Monatszusammenfassung",
@@ -83,7 +88,15 @@
   },
   "tabs": {
     "expenses": "Ausgaben",
-    "summary": "Zusammenfassung"
+    "summary": "Zusammenfassung",
+    "map": "Karte"
+  },
+  "map": {
+    "title": "Ausgabenkarte",
+    "expensesWithLocation": "Ausgaben mit Standort",
+    "noLocations": "Keine Ausgaben mit Standortdaten",
+    "addLocationHint": "Fügen Sie Ausgaben mit Standort hinzu, um sie auf der Karte zu sehen",
+    "errorLoading": "Fehler beim Laden der Kartendaten"
   },
   "settings": {
     "title": "Einstellungen",

@@ -53,7 +53,12 @@
     "expenseSaved": "Uitgave opgeslagen!",
     "expenseUpdated": "Uitgave bijgewerkt!",
     "expenseSavedOffline": "Uitgave offline opgeslagen (wordt online gesynchroniseerd)",
-    "validAmount": "Voer alstublieft een geldig bedrag in"
+    "validAmount": "Voer alstublieft een geldig bedrag in",
+    "location": "Locatie",
+    "captureLocation": "Huidige Locatie Vastleggen",
+    "locationCaptured": "Locatie vastgelegd",
+    "locationPermissionDenied": "Locatiemachtiging is vereist om uw locatie vast te leggen",
+    "locationError": "Locatie kon niet worden vastgelegd"
   },
   "summary": {
     "title": "Maandelijks Overzicht",
@@ -83,7 +88,15 @@
   },
   "tabs": {
     "expenses": "Uitgaven",
-    "summary": "Overzicht"
+    "summary": "Overzicht",
+    "map": "Kaart"
+  },
+  "map": {
+    "title": "Uitgavenkaart",
+    "expensesWithLocation": "uitgaven met locatie",
+    "noLocations": "Geen uitgaven met locatiegegevens",
+    "addLocationHint": "Voeg uitgaven met locatie toe om ze op de kaart te zien",
+    "errorLoading": "Fout bij het laden van kaartgegevens"
   },
   "settings": {
     "title": "Instellingen",

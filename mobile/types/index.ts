@@ -9,6 +9,12 @@ export type ExpenseCategory =
   | 'Travel'
   | 'Other';
 
+export interface ExpenseLocation {
+  latitude?: number;
+  longitude?: number;
+  address?: string;
+}
+
 export interface Expense {
   id: string;
   userId: string;
@@ -16,6 +22,7 @@ export interface Expense {
   description: string;
   category: ExpenseCategory;
   date: string;
+  location?: ExpenseLocation;
   createdAt: string;
   updatedAt?: string;
 }
@@ -53,4 +60,5 @@ export type RootStackParamList = {
 export type MainTabParamList = {
   Expenses: undefined;
   Summary: undefined;
+  MapView: undefined;
 };

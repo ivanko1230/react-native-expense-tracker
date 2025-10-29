@@ -8,6 +8,11 @@ export const GET_EXPENSES = gql`
       description
       category
       date
+      location {
+        latitude
+        longitude
+        address
+      }
       createdAt
     }
   }
@@ -19,18 +24,25 @@ export const CREATE_EXPENSE = gql`
     $description: String!
     $category: String!
     $date: String!
+    $location: ExpenseLocationInput
   ) {
     createExpense(
       amount: $amount
       description: $description
       category: $category
       date: $date
+      location: $location
     ) {
       id
       amount
       description
       category
       date
+      location {
+        latitude
+        longitude
+        address
+      }
       createdAt
     }
   }
@@ -43,6 +55,7 @@ export const UPDATE_EXPENSE = gql`
     $description: String
     $category: String
     $date: String
+    $location: ExpenseLocationInput
   ) {
     updateExpense(
       id: $id
@@ -50,12 +63,18 @@ export const UPDATE_EXPENSE = gql`
       description: $description
       category: $category
       date: $date
+      location: $location
     ) {
       id
       amount
       description
       category
       date
+      location {
+        latitude
+        longitude
+        address
+      }
       updatedAt
     }
   }

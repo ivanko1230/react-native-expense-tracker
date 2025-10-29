@@ -53,7 +53,12 @@
     "expenseSaved": "Dépense enregistrée !",
     "expenseUpdated": "Dépense mise à jour !",
     "expenseSavedOffline": "Dépense enregistrée hors ligne (sera synchronisée en ligne)",
-    "validAmount": "Veuillez entrer un montant valide"
+    "validAmount": "Veuillez entrer un montant valide",
+    "location": "Localisation",
+    "captureLocation": "Capturer la Localisation Actuelle",
+    "locationCaptured": "Localisation capturée",
+    "locationPermissionDenied": "La permission de localisation est requise pour capturer votre localisation",
+    "locationError": "Échec de la capture de localisation"
   },
   "summary": {
     "title": "Résumé Mensuel",
@@ -83,7 +88,15 @@
   },
   "tabs": {
     "expenses": "Dépenses",
-    "summary": "Résumé"
+    "summary": "Résumé",
+    "map": "Carte"
+  },
+  "map": {
+    "title": "Carte des Dépenses",
+    "expensesWithLocation": "dépenses avec localisation",
+    "noLocations": "Aucune dépense avec données de localisation",
+    "addLocationHint": "Ajoutez des dépenses avec localisation pour les voir sur la carte",
+    "errorLoading": "Erreur lors du chargement des données de la carte"
   },
   "settings": {
     "title": "Paramètres",

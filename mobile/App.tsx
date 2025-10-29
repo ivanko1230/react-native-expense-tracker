@@ -14,6 +14,7 @@ import LoginScreen from './screens/LoginScreen';
 import ExpenseListScreen from './screens/ExpenseListScreen';
 import AddExpenseScreen from './screens/AddExpenseScreen';
 import SummaryScreen from './screens/SummaryScreen';
+import MapViewScreen from './screens/MapViewScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -41,6 +42,13 @@ function MainTabs() {
         component={SummaryScreen}
         options={{
           tabBarLabel: t('tabs.summary'),
+        }}
+      />
+      <Tab.Screen
+        name="MapView"
+        component={MapViewScreen}
+        options={{
+          tabBarLabel: t('tabs.map'),
         }}
       />
     </Tab.Navigator>

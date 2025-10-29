@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import User, { IUser } from '../models/User';
-import Expense, { IExpense, ExpenseCategory } from '../models/Expense';
+import Expense, { IExpense, IExpenseLocation, ExpenseCategory } from '../models/Expense';
 import jwt from 'jsonwebtoken';
 import { GraphQLContext } from '../types/context';
 import '../types/env';
@@ -38,6 +38,7 @@ interface CreateExpenseArgs {
   description: string;
   category: ExpenseCategory;
   date: string;
+  location?: IExpenseLocation;
 }
 
 interface UpdateExpenseArgs {
@@ -46,6 +47,7 @@ interface UpdateExpenseArgs {
   description?: string;
   category?: ExpenseCategory;
   date?: string;
+  location?: IExpenseLocation;
 }
 
 interface DeleteExpenseArgs {
@@ -215,6 +217,7 @@ const resolvers = {
         description: args.description,
         category: args.category,
         date: args.date ? new Date(args.date) : new Date(),
+        location: args.location || undefined,
       });
 
       await expense.save();
@@ -235,6 +238,7 @@ const resolvers = {
       if (args.description !== undefined) expense.description = args.description;
       if (args.category !== undefined) expense.category = args.category;
       if (args.date !== undefined) expense.date = new Date(args.date);
+      if (args.location !== undefined) expense.location = args.location;
 
       await expense.save();
       return expense;

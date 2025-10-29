@@ -14,7 +14,8 @@ import { isOnline } from '../utils/networkUtils';
 import { addPendingExpense, saveExpensesLocally, getExpensesLocally } from '../services/storageService';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { RootStackParamList, Expense } from '../types';
+import { RootStackParamList, Expense, ExpenseLocation } from '../types';
+import * as Location from 'expo-location';
 
 type AddExpenseScreenProps = NativeStackScreenProps<RootStackParamList, 'AddExpense'>;
 
@@ -39,6 +40,10 @@ export default function AddExpenseScreen({ navigation, route }: AddExpenseScreen
   const [description, setDescription] = useState<string>(expense ? expense.description : '');
   const [category, setCategory] = useState<string>(expense ? expense.category : 'Other');
   const [showCategories, setShowCategories] = useState<boolean>(false);
+  const [location, setLocation] = useState<ExpenseLocation | null>(
+    expense?.location || null
+  );
+  const [locationLoading, setLocationLoading] = useState<boolean>(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,6 +61,58 @@ export default function AddExpenseScreen({ navigation, route }: AddExpenseScreen
 
   const loading = createLoading || updateLoading;
 
+  const captureLocation = async (): Promise<void> => {
+    try {
+      setLocationLoading(true);
+      
+      // Request permissions
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(t('common.error'), t('addExpense.locationPermissionDenied'));
+        setLocationLoading(false);
+        return;
+      }
+
+      // Get current location
+      const locationData = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = locationData.coords;
+
+      // Try to reverse geocode to get address
+      let address: string | undefined;
+      try {
+        const reverseGeocode = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+        if (reverseGeocode && reverseGeocode.length > 0) {
+          const addr = reverseGeocode[0];
+          address = [
+            addr.street,
+            addr.city,
+            addr.region,
+            addr.country,
+          ]
+            .filter(Boolean)
+            .join(', ');
+        }
+      } catch (error) {
+        // Ignore reverse geocoding errors
+        console.log('Reverse geocoding failed:', error);
+      }
+
+      setLocation({
+        latitude,
+        longitude,
+        address,
+      });
+      Alert.alert(t('common.success'), t('addExpense.locationCaptured'));
+    } catch (error: any) {
+      Alert.alert(t('common.error'), error.message || t('addExpense.locationError'));
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+
   const handleSave = async (): Promise<void> => {
     if (!amount || !description) {
       Alert.alert(t('common.error'), t('auth.fillAllFields'));
@@ -68,12 +125,16 @@ export default function AddExpenseScreen({ navigation, route }: AddExpenseScreen
       return;
     }
 
-    const expenseData = {
+    const expenseData: any = {
       amount: amountValue,
       description,
       category,
       date: isEditing && expense ? expense.date : new Date().toISOString(),
     };
+
+    if (location) {
+      expenseData.location = location;
+    }
 
     try {
       const online = await isOnline();
@@ -181,6 +242,33 @@ export default function AddExpenseScreen({ navigation, route }: AddExpenseScreen
         </View>
       )}
 
+      <Text style={styles.label}>{t('addExpense.location')}</Text>
+      <TouchableOpacity
+        style={styles.locationButton}
+        onPress={captureLocation}
+        disabled={locationLoading}
+      >
+        {locationLoading ? (
+          <ActivityIndicator color="#007AFF" />
+        ) : (
+          <>
+            <Text style={styles.locationButtonText}>
+              {location
+                ? t('addExpense.locationCaptured') + (location.address ? ` - ${location.address}` : '')
+                : t('addExpense.captureLocation')}
+            </Text>
+            {location && (
+              <TouchableOpacity
+                onPress={() => setLocation(null)}
+                style={styles.removeLocationButton}
+              >
+                <Text style={styles.removeLocationText}>✕</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.saveButton}
         onPress={handleSave}
@@ -274,10 +362,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
+      saveButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+      },
+      locationButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 15,
+        borderRadius: 8,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#ddd',
+      },
+      locationButtonText: {
+        fontSize: 16,
+        color: '#333',
+        flex: 1,
+      },
+      removeLocationButton: {
+        marginLeft: 10,
+        padding: 5,
+      },
+      removeLocationText: {
+        fontSize: 18,
+        color: '#ff3b30',
+        fontWeight: 'bold',
+      },
+    });
 
