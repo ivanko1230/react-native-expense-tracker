@@ -48,7 +48,10 @@
     "amountPlaceholder": "0.00",
     "descriptionPlaceholder": "Sur quoi avez-vous dépensé ?",
     "saveExpense": "Enregistrer la Dépense",
+    "editTitle": "Modifier la Dépense",
+    "updateExpense": "Mettre à jour la Dépense",
     "expenseSaved": "Dépense enregistrée !",
+    "expenseUpdated": "Dépense mise à jour !",
     "expenseSavedOffline": "Dépense enregistrée hors ligne (sera synchronisée en ligne)",
     "validAmount": "Veuillez entrer un montant valide"
   },

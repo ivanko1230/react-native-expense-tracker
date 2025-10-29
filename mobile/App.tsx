@@ -6,6 +6,7 @@ import { ApolloProvider } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { initializeI18n } from './services/i18n';
 import apolloClient from './services/apolloClient';
@@ -76,10 +77,11 @@ export default function App() {
   }
 
   return (
-    <ApolloProvider client={apolloClient}>
-      <NavigationContainer>
-        <StatusBar style="auto" />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ApolloProvider client={apolloClient}>
+        <NavigationContainer>
+          <StatusBar style="auto" />
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
           {!isAuthenticated ? (
             <Stack.Screen name="Login">
               {(props: any) => (
@@ -102,8 +104,9 @@ export default function App() {
               />
             </>
           )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </ApolloProvider>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ApolloProvider>
+    </GestureHandlerRootView>
   );
 }

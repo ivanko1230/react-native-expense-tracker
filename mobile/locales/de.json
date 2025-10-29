@@ -48,7 +48,10 @@
     "amountPlaceholder": "0.00",
     "descriptionPlaceholder": "Wofür haben Sie ausgegeben?",
     "saveExpense": "Ausgabe Speichern",
+    "editTitle": "Ausgabe Bearbeiten",
+    "updateExpense": "Ausgabe Aktualisieren",
     "expenseSaved": "Ausgabe gespeichert!",
+    "expenseUpdated": "Ausgabe aktualisiert!",
     "expenseSavedOffline": "Ausgabe offline gespeichert (wird online synchronisiert)",
     "validAmount": "Bitte geben Sie einen gültigen Betrag ein"
   },

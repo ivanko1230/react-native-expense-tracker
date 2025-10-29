@@ -48,7 +48,10 @@
     "amountPlaceholder": "0.00",
     "descriptionPlaceholder": "¿En qué gastaste?",
     "saveExpense": "Guardar Gasto",
+    "editTitle": "Editar Gasto",
+    "updateExpense": "Actualizar Gasto",
     "expenseSaved": "¡Gasto guardado!",
+    "expenseUpdated": "¡Gasto actualizado!",
     "expenseSavedOffline": "Gasto guardado sin conexión (se sincronizará cuando esté en línea)",
     "validAmount": "Por favor ingresa una cantidad válida"
   },

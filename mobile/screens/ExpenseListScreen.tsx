@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Animated,
 } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GET_EXPENSES, DELETE_EXPENSE } from '../services/graphql';
@@ -26,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 
 type RootStackParamList = {
   Expenses: undefined;
-  AddExpense: undefined;
+  AddExpense: { expense?: Expense } | undefined;
 };
 
 type ExpenseListScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Expenses'>;
@@ -43,6 +45,7 @@ export default function ExpenseListScreen({ navigation }: ExpenseListScreenProps
   const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
   const [filters, setFilters] = useState<ExpenseFilters>({});
   const client = useApolloClient();
+  const swipeableRefs = useRef<{ [key: string]: Swipeable | null }>({});
 
   const { data, loading, error, refetch } = useQuery(GET_EXPENSES, {
     skip: !isNetworkOnline,
@@ -64,10 +67,10 @@ export default function ExpenseListScreen({ navigation }: ExpenseListScreenProps
     onError: async (error: any) => {
       // If offline, delete locally
       if (!isNetworkOnline) {
-        const localExp = localExpenses.find((e) => e.id === error.variables?.id);
+        const localExp = localExpenses.find((e: Expense) => e.id === error.variables?.id);
         if (localExp) {
           await addDeletedExpense(error.variables.id);
-          const updated = localExpenses.filter((e) => e.id !== error.variables.id);
+          const updated = localExpenses.filter((e: Expense) => e.id !== error.variables.id);
           setLocalExpenses(updated);
           await saveExpensesLocally(updated);
         }
@@ -143,7 +146,7 @@ export default function ExpenseListScreen({ navigation }: ExpenseListScreenProps
             } else {
               // Offline deletion
               await addDeletedExpense(id);
-              const updated = expenses.filter((e) => e.id !== id);
+              const updated = expenses.filter((e: Expense) => e.id !== id);
               setLocalExpenses(updated);
               await saveExpensesLocally(updated);
               Alert.alert(t('common.success'), t('expenses.expenseDeletedOffline'));
@@ -154,6 +157,35 @@ export default function ExpenseListScreen({ navigation }: ExpenseListScreenProps
         },
       },
     ]);
+  };
+
+  const handleEdit = (expense: Expense): void => {
+    swipeableRefs.current[expense.id]?.close();
+    navigation.navigate('AddExpense', { expense });
+  };
+
+  const handleDeleteAction = (id: string): void => {
+    swipeableRefs.current[id]?.close();
+    handleDelete(id);
+  };
+
+  const renderRightActions = (expense: Expense, _progress: Animated.AnimatedInterpolation<number>, _dragX: Animated.AnimatedInterpolation<number>) => {
+    return (
+      <View style={styles.rightActionContainer}>
+        <TouchableOpacity
+          style={[styles.editAction, styles.rightAction]}
+          onPress={() => handleEdit(expense)}
+        >
+          <Text style={styles.actionText}>{t('common.edit')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.deleteAction, styles.rightAction]}
+          onPress={() => handleDeleteAction(expense.id)}
+        >
+          <Text style={styles.actionText}>{t('common.delete')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   if (loading) {
@@ -233,23 +265,33 @@ export default function ExpenseListScreen({ navigation }: ExpenseListScreenProps
       ) : (
         <FlatList
           data={expenses}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: Expense) => item.id}
           renderItem={({ item }: { item: Expense }) => (
-            <TouchableOpacity
-              style={styles.expenseItem}
-              onLongPress={() => handleDelete(item.id)}
+            <Swipeable
+              ref={(ref: Swipeable | null) => {
+                if (ref) {
+                  swipeableRefs.current[item.id] = ref;
+                }
+              }}
+              renderRightActions={(progress: Animated.AnimatedInterpolation<number>, dragX: Animated.AnimatedInterpolation<number>) => renderRightActions(item, progress, dragX)}
+              rightThreshold={40}
             >
-              <View style={styles.expenseInfo}>
-                <Text style={styles.expenseDescription}>{item.description}</Text>
-                <View style={styles.expenseMeta}>
-                  <Text style={styles.expenseCategory}>{t(`categories.${item.category}`)}</Text>
-                  <Text style={styles.expenseDate}>
-                    {format(new Date(item.date), 'MMM dd, yyyy')}
-                  </Text>
+              <TouchableOpacity
+                style={styles.expenseItem}
+                onPress={() => handleEdit(item)}
+              >
+                <View style={styles.expenseInfo}>
+                  <Text style={styles.expenseDescription}>{item.description}</Text>
+                  <View style={styles.expenseMeta}>
+                    <Text style={styles.expenseCategory}>{t(`categories.${item.category}`)}</Text>
+                    <Text style={styles.expenseDate}>
+                      {format(new Date(item.date), 'MMM dd, yyyy')}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-              <Text style={styles.expenseAmount}>${item.amount.toFixed(2)}</Text>
-            </TouchableOpacity>
+                <Text style={styles.expenseAmount}>${item.amount.toFixed(2)}</Text>
+              </TouchableOpacity>
+            </Swipeable>
           )}
           refreshing={loading}
           onRefresh={refetch}
@@ -402,5 +444,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
+  },
+  rightActionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginVertical: 1,
+  },
+  rightAction: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    height: '100%',
+  },
+  editAction: {
+    backgroundColor: '#007AFF',
+  },
+  deleteAction: {
+    backgroundColor: '#ff3b30',
+  },
+  actionText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

@@ -48,7 +48,10 @@
     "amountPlaceholder": "0.00",
     "descriptionPlaceholder": "Waar heeft u aan uitgegeven?",
     "saveExpense": "Uitgave Opslaan",
+    "editTitle": "Uitgave Bewerken",
+    "updateExpense": "Uitgave Bijwerken",
     "expenseSaved": "Uitgave opgeslagen!",
+    "expenseUpdated": "Uitgave bijgewerkt!",
     "expenseSavedOffline": "Uitgave offline opgeslagen (wordt online gesynchroniseerd)",
     "validAmount": "Voer alstublieft een geldig bedrag in"
   },

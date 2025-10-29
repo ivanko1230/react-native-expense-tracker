@@ -9,18 +9,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useMutation } from '@apollo/client';
-import { CREATE_EXPENSE } from '../services/graphql';
+import { CREATE_EXPENSE, UPDATE_EXPENSE } from '../services/graphql';
 import { isOnline } from '../utils/networkUtils';
 import { addPendingExpense, saveExpensesLocally, getExpensesLocally } from '../services/storageService';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { RootStackParamList } from '../types';
+import { RootStackParamList, Expense } from '../types';
 
-type AddExpenseScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddExpense'>;
-
-interface AddExpenseScreenProps {
-  navigation: AddExpenseScreenNavigationProp;
-}
+type AddExpenseScreenProps = NativeStackScreenProps<RootStackParamList, 'AddExpense'>;
 
 const CATEGORIES = [
   'Food',
@@ -34,22 +30,31 @@ const CATEGORIES = [
   'Other',
 ] as const;
 
-export default function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
+export default function AddExpenseScreen({ navigation, route }: AddExpenseScreenProps) {
   const { t } = useTranslation();
-  const [amount, setAmount] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [category, setCategory] = useState<string>('Other');
+  const expense = route.params?.expense;
+  const isEditing = !!expense;
+  
+  const [amount, setAmount] = useState<string>(expense ? expense.amount.toString() : '');
+  const [description, setDescription] = useState<string>(expense ? expense.description : '');
+  const [category, setCategory] = useState<string>(expense ? expense.category : 'Other');
   const [showCategories, setShowCategories] = useState<boolean>(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t('addExpense.title'),
+      title: isEditing ? t('addExpense.editTitle') : t('addExpense.title'),
     });
-  }, [navigation, t]);
+  }, [navigation, t, isEditing]);
 
-  const [createExpense, { loading }] = useMutation(CREATE_EXPENSE, {
+  const [createExpense, { loading: createLoading }] = useMutation(CREATE_EXPENSE, {
     refetchQueries: ['GetExpenses'],
   });
+
+  const [updateExpense, { loading: updateLoading }] = useMutation(UPDATE_EXPENSE, {
+    refetchQueries: ['GetExpenses'],
+  });
+
+  const loading = createLoading || updateLoading;
 
   const handleSave = async (): Promise<void> => {
     if (!amount || !description) {
@@ -67,32 +72,49 @@ export default function AddExpenseScreen({ navigation }: AddExpenseScreenProps) 
       amount: amountValue,
       description,
       category,
-      date: new Date().toISOString(),
+      date: isEditing && expense ? expense.date : new Date().toISOString(),
     };
 
     try {
       const online = await isOnline();
       
-      if (online) {
-        // Online: Create via GraphQL
-        await createExpense({
-          variables: expenseData,
-        });
-        Alert.alert(t('common.success'), t('addExpense.expenseSaved'));
+      if (isEditing && expense) {
+        // Editing existing expense
+        if (online) {
+          await updateExpense({
+            variables: {
+              id: expense.id,
+              ...expenseData,
+            },
+          });
+          Alert.alert(t('common.success'), t('addExpense.expenseUpdated'));
+        } else {
+          // Offline edit - for now, show error
+          Alert.alert(t('common.error'), 'Editing expenses offline is not yet supported');
+          return;
+        }
       } else {
-        // Offline: Save locally and add to pending queue
-        const tempId = `temp_${Date.now()}`;
-        const localExpense = {
-          id: tempId,
-          ...expenseData,
-        };
-        
-        await addPendingExpense(localExpense);
-        const local = await getExpensesLocally();
-        local.push(localExpense);
-        await saveExpensesLocally(local);
-        
-        Alert.alert(t('common.success'), t('addExpense.expenseSavedOffline'));
+        // Creating new expense
+        if (online) {
+          await createExpense({
+            variables: expenseData,
+          });
+          Alert.alert(t('common.success'), t('addExpense.expenseSaved'));
+        } else {
+          // Offline: Save locally and add to pending queue
+          const tempId = `temp_${Date.now()}`;
+          const localExpense = {
+            id: tempId,
+            ...expenseData,
+          };
+          
+          await addPendingExpense(localExpense);
+          const local = await getExpensesLocally();
+          local.push(localExpense);
+          await saveExpensesLocally(local);
+          
+          Alert.alert(t('common.success'), t('addExpense.expenseSavedOffline'));
+        }
       }
       
       navigation.goBack();
@@ -103,7 +125,7 @@ export default function AddExpenseScreen({ navigation }: AddExpenseScreenProps) 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('addExpense.title')}</Text>
+      {!isEditing && <Text style={styles.title}>{t('addExpense.title')}</Text>}
 
       <Text style={styles.label}>{t('addExpense.amountRequired')}</Text>
       <TextInput
@@ -167,7 +189,9 @@ export default function AddExpenseScreen({ navigation }: AddExpenseScreenProps) 
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.saveButtonText}>{t('addExpense.saveExpense')}</Text>
+          <Text style={styles.saveButtonText}>
+            {isEditing ? t('addExpense.updateExpense') : t('addExpense.saveExpense')}
+          </Text>
         )}
       </TouchableOpacity>
     </View>

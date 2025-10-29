@@ -47,7 +47,7 @@ export interface ExpenseFilters {
 export type RootStackParamList = {
   Login: undefined;
   Main: undefined;
-  AddExpense: undefined;
+  AddExpense: { expense?: Expense } | undefined;
 };
 
 export type MainTabParamList = {

@@ -48,7 +48,10 @@
     "amountPlaceholder": "0.00",
     "descriptionPlaceholder": "What did you spend on?",
     "saveExpense": "Save Expense",
+    "editTitle": "Edit Expense",
+    "updateExpense": "Update Expense",
     "expenseSaved": "Expense saved!",
+    "expenseUpdated": "Expense updated!",
     "expenseSavedOffline": "Expense saved offline (will sync when online)",
     "validAmount": "Please enter a valid amount"
   },
@@ -83,7 +86,7 @@
     "summary": "Summary"
   },
   "settings": {
- خر  "title": "Settings",
+    "title": "Settings",
     "language": "Language",
     "selectLanguage": "Select Language",
     "english": "English",
