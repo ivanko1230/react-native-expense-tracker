@@ -18,15 +18,23 @@ import {
   addDeletedExpense,
 } from '../services/storageService';
 import { syncAll } from '../services/syncService';
+import FilterModal from '../components/FilterModal';
 
 export default function ExpenseListScreen({ navigation }) {
   const [isNetworkOnline, setIsNetworkOnline] = useState(true);
   const [localExpenses, setLocalExpenses] = useState([]);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [filters, setFilters] = useState({});
   const client = useApolloClient();
 
   const { data, loading, error, refetch } = useQuery(GET_EXPENSES, {
     skip: !isNetworkOnline,
     fetchPolicy: 'network-only',
+    variables: {
+      category: filters.category,
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+    },
     onCompleted: async (data) => {
       if (data?.expenses) {
         await saveExpensesLocally(data.expenses);
@@ -77,7 +85,32 @@ export default function ExpenseListScreen({ navigation }) {
     setLocalExpenses(local);
   };
 
-  const expenses = isNetworkOnline ? (data?.expenses || []) : localExpenses;
+  // Apply filters to local expenses when offline
+  const getFilteredExpenses = (expenseList) => {
+    let filtered = expenseList;
+    
+    if (filters.category) {
+      filtered = filtered.filter((exp) => exp.category === filters.category);
+    }
+    
+    if (filters.startDate) {
+      filtered = filtered.filter(
+        (exp) => new Date(exp.date) >= new Date(filters.startDate)
+      );
+    }
+    
+    if (filters.endDate) {
+      filtered = filtered.filter(
+        (exp) => new Date(exp.date) <= new Date(filters.endDate)
+      );
+    }
+    
+    return filtered;
+  };
+
+  const expenses = isNetworkOnline
+    ? (data?.expenses || [])
+    : getFilteredExpenses(localExpenses);
 
   const handleDelete = (id) => {
     Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
@@ -127,13 +160,42 @@ export default function ExpenseListScreen({ navigation }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Expenses</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('AddExpense')}
-        >
-          <Text style={styles.addButtonText}>+ Add</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => setShowFilterModal(true)}
+          >
+            <Text style={styles.filterButtonText}>Filter</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate('AddExpense')}
+          >
+            <Text style={styles.addButtonText}>+ Add</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+      
+      {Object.keys(filters).length > 0 && (
+        <View style={styles.activeFilters}>
+          <Text style={styles.activeFiltersText}>Filters active</Text>
+          <TouchableOpacity onPress={() => setFilters({})}>
+            <Text style={styles.clearFiltersText}>Clear</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <FilterModal
+        visible={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        onApply={(newFilters) => {
+          setFilters(newFilters);
+          if (isNetworkOnline) {
+            refetch();
+          }
+        }}
+        currentFilters={filters}
+      />
 
       {expenses.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -182,6 +244,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  filterButton: {
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  filterButtonText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  activeFilters: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    paddingHorizontal: 20,
+    backgroundColor: '#e8f4f8',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  activeFiltersText: {
+    fontSize: 14,
+    color: '#007AFF',
+    fontWeight: '500',
+  },
+  clearFiltersText: {
+    fontSize: 14,
+    color: '#007AFF',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   title: {
     fontSize: 28,
