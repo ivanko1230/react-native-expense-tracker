@@ -1,5 +1,5 @@
 {
-  "name": "expense-tracker-backend",
+  "name": "@expense-tracker/backend",
   "version": "1.0.0",
   "description": "GraphQL backend for expense tracker",
   "main": "dist/server.js",

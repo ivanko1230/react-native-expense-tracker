@@ -1,9 +1,41 @@
+# Dependencies
 node_modules/
-.env
-*.log
-.DS_Store
-.expo/
-.expo-shared訪問
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
 dist/
 build/
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Expo
+.expo/
+.expo-shared/
 web-build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

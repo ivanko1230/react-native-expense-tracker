@@ -1,0 +1,28 @@
+{
+  "name": "expense-tracker-monorepo",
+  "version": "1.0.0",
+  "description": "Expense Tracker Monorepo - React Native mobile app with GraphQL backend",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "mobile"
+  ],
+  "scripts": {
+    "backend:dev": "npm run dev --workspace=backend",
+    "backend:build": "npm run build --workspace=backend",
+    "backend:start": "npm run start --workspace=backend",
+    "mobile:start": "npm run start --workspace=mobile",
+    "mobile:android": "npm run android --workspace=mobile",
+    "mobile:ios": "npm run ios --workspace=mobile",
+    "install:all": "npm install",
+    "clean": "npm run clean --workspaces --if-present"
+  },
+  "keywords": [
+    "monorepo",
+    "react-native",
+    "graphql",
+    "expense-tracker"
+  ],
+  "author": "ivanko1230 <ivanovcharenko352@gmail.com>",
+  "license": "ISC"
+}
