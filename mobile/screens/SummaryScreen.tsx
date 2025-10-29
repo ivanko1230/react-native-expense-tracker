@@ -12,6 +12,8 @@ import { useQuery } from '@apollo/client';
 import { PieChart, BarChart } from 'react-native-chart-kit';
 import { GET_MONTHLY_SUMMARY } from '../services/graphql';
 import { format, subMonths, addMonths } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { CategorySummary } from '../types';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -39,30 +41,31 @@ const COLORS = [
 ];
 
 export default function SummaryScreen() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const { t } = useTranslation();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const currentYear = selectedDate.getFullYear();
   const currentMonth = selectedDate.getMonth() + 1;
 
-  const { data, loading, error, refetch } = useQuery(GET_MONTHLY_SUMMARY, {
+   const { data, loading, error, refetch } = useQuery(GET_MONTHLY_SUMMARY, {
     variables: {
       year: currentYear,
       month: currentMonth,
     },
   });
 
-  const summary = data?.monthlySummary || [];
+  const summary: CategorySummary[] = data?.monthlySummary || [];
   const totalExpenses = summary.reduce((sum, item) => sum + item.total, 0);
 
-  const handlePreviousMonth = () => {
+  const handlePreviousMonth = (): void => {
     setSelectedDate(subMonths(selectedDate, 1));
   };
 
-  const handleNextMonth = () => {
+  const handleNextMonth = (): void => {
     setSelectedDate(addMonths(selectedDate, 1));
   };
 
   const pieChartData = summary.map((item, index) => ({
-    name: item.category,
+    name: t(`categories.${item.category}`),
     total: item.total,
     color: COLORS[index % COLORS.length],
     legendFontColor: '#333',
@@ -70,7 +73,7 @@ export default function SummaryScreen() {
   }));
 
   const barChartData = {
-    labels: summary.map((item) => item.category.substring(0, 6)),
+    labels: summary.map((item) => t(`categories.${item.category}`).substring(0, 6)),
     datasets: [
       {
         data: summary.map((item) => item.total),
@@ -89,7 +92,7 @@ export default function SummaryScreen() {
   if (error) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={styles.errorText}>Error loading summary</Text>
+        <Text style={styles.errorText}>{t('summary.errorLoading')}</Text>
         <Text style={styles.errorSubtext}>{error.message}</Text>
       </View>
     );
@@ -98,7 +101,7 @@ export default function SummaryScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <Text style={styles.title}>Monthly Summary</Text>
+        <Text style={styles.title}>{t('summary.title')}</Text>
         <View style={styles.dateSelector}>
           <TouchableOpacity onPress={handlePreviousMonth}>
             <Text style={styles.dateButton}>←</Text>
@@ -114,17 +117,17 @@ export default function SummaryScreen() {
 
       {summary.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No expenses for this month</Text>
+          <Text style={styles.emptyText}>{t('summary.noExpensesMonth')}</Text>
         </View>
       ) : (
         <>
           <View style={styles.totalContainer}>
-            <Text style={styles.totalLabel}>Total Expenses</Text>
+            <Text style={styles.totalLabel}>{t('summary.totalExpenses')}</Text>
             <Text style={styles.totalAmount}>${totalExpenses.toFixed(2)}</Text>
           </View>
 
           <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>By Category (Pie Chart)</Text>
+            <Text style={styles.chartTitle}>{t('summary.byCategoryPie')}</Text>
             {pieChartData.length > 0 && (
               <PieChart
                 data={pieChartData}
@@ -141,7 +144,7 @@ export default function SummaryScreen() {
           </View>
 
           <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>By Category (Bar Chart)</Text>
+            <Text style={styles.chartTitle}>{t('summary.byCategoryBar')}</Text>
             {barChartData.labels.length > 0 && (
               <BarChart
                 data={barChartData}
@@ -158,7 +161,7 @@ export default function SummaryScreen() {
           </View>
 
           <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Category Breakdown</Text>
+            <Text style={styles.listTitle}>{t('summary.categoryBreakdown')}</Text>
             {summary.map((item, index) => (
               <View key={item.category} style={styles.listItem}>
                 <View style={styles.listItemLeft}>
@@ -168,7 +171,7 @@ export default function SummaryScreen() {
                       { backgroundColor: COLORS[index % COLORS.length] },
                     ]}
                   />
-                  <Text style={styles.listItemCategory}>{item.category}</Text>
+                  <Text style={styles.listItemCategory}>{t(`categories.${item.category}`)}</Text>
                 </View>
                 <View style={styles.listItemRight}>
                   <Text style={styles.listItemAmount}>

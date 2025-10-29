@@ -1,0 +1,95 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "apply": "Appliquer",
+    "clear": "Effacer",
+    "filter": "Filtrer",
+    "all": "Tout",
+    "error": "Erreur",
+    "success": "Succès",
+    "loading": "Chargement..."
+  },
+  "auth": {
+    "title": "Gestionnaire de Dépenses",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "username": "Nom d'utilisateur",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "noAccount": "Vous n'avez pas de compte ? Inscrivez-vous",
+    "haveAccount": "Vous avez déjà un compte ? Connectez-vous",
+    "fillAllFields": "Veuillez remplir tous les champs requis"
+  },
+  "expenses": {
+    "title": "Dépenses",
+    "addExpense": "Ajouter une Dépense",
+    "add": "+ Ajouter",
+    "noExpenses": "Aucune dépense pour le moment",
+    "addFirstExpense": "Appuyez sur + Ajouter pour créer votre première dépense",
+    "deleteExpense": "Supprimer la Dépense",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette dépense ?",
+    "expenseDeleted": "Dépense supprimée",
+    "expenseDeletedOffline": "Dépense supprimée (sera synchronisée en ligne)",
+    "errorLoading": "Erreur lors du chargement des dépenses",
+    "filtersActive": "Filtres actifs"
+  },
+  "addExpense": {
+    "title": "Ajouter une Dépense",
+    "amount": "Montant",
+    "amountRequired": "Montant *",
+    "description": "Description",
+    "descriptionRequired": "Description *",
+    "category": "Catégorie",
+    "amountPlaceholder": "0.00",
+    "descriptionPlaceholder": "Sur quoi avez-vous dépensé ?",
+    "saveExpense": "Enregistrer la Dépense",
+    "expenseSaved": "Dépense enregistrée !",
+    "expenseSavedOffline": "Dépense enregistrée hors ligne (sera synchronisée en ligne)",
+    "validAmount": "Veuillez entrer un montant valide"
+  },
+  "summary": {
+    "title": "Résumé Mensuel",
+    "totalExpenses": "Dépenses Totales",
+    "byCategoryPie": "Par Catégorie (Graphique Circulaire)",
+    "byCategoryBar": "Par Catégorie (Graphique en Barres)",
+    "categoryBreakdown": "Répartition par Catégorie",
+    "noExpensesMonth": "Aucune dépense pour ce mois",
+    "errorLoading": "Erreur lors du chargement du résumé"
+  },
+  "filter": {
+    "title": "Filtrer les Dépenses",
+    "category": "Catégorie",
+    "dateRange": "Plage de Dates",
+    "dateHint": "Remarque : L'implémentation complète du sélecteur de dates nécessiterait des bibliothèques supplémentaires"
+  },
+  "categories": {
+    "Food": "Nourriture",
+    "Transport": "Transport",
+    "Shopping": "Shopping",
+    "Bills": "Factures",
+    "Entertainment": "Divertissement",
+    "Healthcare": "Santé",
+    "Education": "Éducation",
+    "Travel": "Voyage",
+    "Other": "Autre"
+  },
+  "tabs": {
+    "expenses": "Dépenses",
+    "summary": "Résumé"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "selectLanguage": "Sélectionner la Langue",
+    "english": "Anglais",
+    "spanish": "Espagnol",
+    "french": "Français",
+    "german": "Allemand",
+    "dutch": "Néerlandais"
+  }
+}

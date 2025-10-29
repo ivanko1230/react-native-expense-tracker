@@ -5,7 +5,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ApolloProvider } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
+import { useTranslation } from 'react-i18next';
 
+import { initializeI18n } from './services/i18n';
 import apolloClient from './services/apolloClient';
 import LoginScreen from './screens/LoginScreen';
 import ExpenseListScreen from './screens/ExpenseListScreen';
@@ -16,6 +18,8 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function MainTabs() {
+  const { t } = useTranslation();
+  
   return (
     <Tab.Navigator
       screenOptions={{
@@ -28,14 +32,14 @@ function MainTabs() {
         name="Expenses"
         component={ExpenseListScreen}
         options={{
-          tabBarLabel: 'Expenses',
+          tabBarLabel: t('tabs.expenses'),
         }}
       />
       <Tab.Screen
         name="Summary"
         component={SummaryScreen}
         options={{
-          tabBarLabel: 'Summary',
+          tabBarLabel: t('tabs.summary'),
         }}
       />
     </Tab.Navigator>
@@ -45,9 +49,15 @@ function MainTabs() {
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [i18nInitialized, setI18nInitialized] = useState<boolean>(false);
 
   useEffect(() => {
-    checkAuth();
+    const initialize = async () => {
+      await initializeI18n();
+      setI18nInitialized(true);
+      checkAuth();
+    };
+    initialize();
   }, []);
 
   const checkAuth = async (): Promise<void> => {
@@ -61,7 +71,7 @@ export default function App() {
     }
   };
 
-  if (loading) {
+  if (!i18nInitialized || loading) {
     return null; // Or a loading screen
   }
 
@@ -88,7 +98,6 @@ export default function App() {
                 options={{
                   presentation: 'modal',
                   headerShown: true,
-                  title: 'Add Expense',
                 }}
               />
             </>

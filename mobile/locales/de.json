@@ -1,0 +1,95 @@
+{
+  "common": {
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "apply": "Anwenden",
+    "clear": "Löschen",
+    "filter": "Filter",
+    "all": "Alle",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "loading": "Laden..."
+  },
+  "auth": {
+    "title": "Ausgabenmanager",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "username": "Benutzername",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "noAccount": "Haben Sie kein Konto? Registrieren",
+    "haveAccount": "Haben Sie bereits ein Konto? Anmelden",
+    "fillAllFields": "Bitte füllen Sie alle erforderlichen Felder aus"
+  },
+  "expenses": {
+    "title": "Ausgaben",
+    "addExpense": "Ausgabe Hinzufügen",
+    "add": "+ Hinzufügen",
+    "noExpenses": "Noch keine Ausgaben",
+    "addFirstExpense": "Tippen Sie auf + Hinzufügen, um Ihre erste Ausgabe zu erstellen",
+    "deleteExpense": "Ausgabe Löschen",
+    "confirmDelete": "Möchten Sie diese Ausgabe wirklich löschen?",
+    "expenseDeleted": "Ausgabe gelöscht",
+    "expenseDeletedOffline": "Ausgabe gelöscht (wird online synchronisiert)",
+    "errorLoading": "Fehler beim Laden der Ausgaben",
+    "filtersActive": "Filter aktiv"
+  },
+  "addExpense": {
+    "title": "Ausgabe Hinzufügen",
+    "amount": "Betrag",
+    "amountRequired": "Betrag *",
+    "description": "Beschreibung",
+    "descriptionRequired": "Beschreibung *",
+    "category": "Kategorie",
+    "amountPlaceholder": "0.00",
+    "descriptionPlaceholder": "Wofür haben Sie ausgegeben?",
+    "saveExpense": "Ausgabe Speichern",
+    "expenseSaved": "Ausgabe gespeichert!",
+    "expenseSavedOffline": "Ausgabe offline gespeichert (wird online synchronisiert)",
+    "validAmount": "Bitte geben Sie einen gültigen Betrag ein"
+  },
+  "summary": {
+    "title": "Monatszusammenfassung",
+    "totalExpenses": "Gesamtausgaben",
+    "byCategoryPie": "Nach Kategorie (Kreisdiagramm)",
+    "byCategoryBar": "Nach Kategorie (Balkendiagramm)",
+    "categoryBreakdown": "Aufschlüsselung nach Kategorie",
+    "noExpensesMonth": "Keine Ausgaben für diesen Monat",
+    "errorLoading": "Fehler beim Laden der Zusammenfassung"
+  },
+  "filter": {
+    "title": "Ausgaben Filtern",
+    "category": "Kategorie",
+    "dateRange": "Datumsbereich",
+    "dateHint": "Hinweis: Die vollständige Implementierung des Datumsauswahlers würde zusätzliche Bibliotheken erfordern"
+  },
+  "categories": {
+    "Food": "Essen",
+    "Transport": "Transport",
+    "Shopping": "Einkaufen",
+    "Bills": "Rechnungen",
+    "Entertainment": "Unterhaltung",
+    "Healthcare": "Gesundheitswesen",
+    "Education": "Bildung",
+    "Travel": "Reisen",
+    "Other": "Sonstiges"
+  },
+  "tabs": {
+    "expenses": "Ausgaben",
+    "summary": "Zusammenfassung"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "selectLanguage": "Sprache Auswählen",
+    "english": "Englisch",
+    "spanish": "Spanisch",
+    "french": "Französisch",
+    "german": "Deutsch",
+    "dutch": "Niederländisch"
+  }
+}

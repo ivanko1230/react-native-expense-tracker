@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,15 @@ import { useMutation } from '@apollo/client';
 import { CREATE_EXPENSE } from '../services/graphql';
 import { isOnline } from '../utils/networkUtils';
 import { addPendingExpense, saveExpensesLocally, getExpensesLocally } from '../services/storageService';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
+import { RootStackParamList } from '../types';
+
+type AddExpenseScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'AddExpense'>;
+
+interface AddExpenseScreenProps {
+  navigation: AddExpenseScreenNavigationProp;
+}
 
 const CATEGORIES = [
   'Food',
@@ -23,27 +32,34 @@ const CATEGORIES = [
   'Education',
   'Travel',
   'Other',
-];
+] as const;
 
-export default function AddExpenseScreen({ navigation }) {
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('Other');
-  const [showCategories, setShowCategories] = useState(false);
+export default function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
+  const { t } = useTranslation();
+  const [amount, setAmount] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [category, setCategory] = useState<string>('Other');
+  const [showCategories, setShowCategories] = useState<boolean>(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: t('addExpense.title'),
+    });
+  }, [navigation, t]);
 
   const [createExpense, { loading }] = useMutation(CREATE_EXPENSE, {
     refetchQueries: ['GetExpenses'],
   });
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     if (!amount || !description) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      Alert.alert(t('common.error'), t('auth.fillAllFields'));
       return;
     }
 
     const amountValue = parseFloat(amount);
     if (isNaN(amountValue) || amountValue <= 0) {
-      Alert.alert('Error', 'Please enter a valid amount');
+      Alert.alert(t('common.error'), t('addExpense.validAmount'));
       return;
     }
 
@@ -62,7 +78,7 @@ export default function AddExpenseScreen({ navigation }) {
         await createExpense({
           variables: expenseData,
         });
-        Alert.alert('Success', 'Expense saved!');
+        Alert.alert(t('common.success'), t('addExpense.expenseSaved'));
       } else {
         // Offline: Save locally and add to pending queue
         const tempId = `temp_${Date.now()}`;
@@ -76,43 +92,43 @@ export default function AddExpenseScreen({ navigation }) {
         local.push(localExpense);
         await saveExpensesLocally(local);
         
-        Alert.alert('Success', 'Expense saved offline (will sync when online)');
+        Alert.alert(t('common.success'), t('addExpense.expenseSavedOffline'));
       }
       
       navigation.goBack();
-    } catch (error) {
-      Alert.alert('Error', error.message);
+    } catch (error: any) {
+      Alert.alert(t('common.error'), error.message);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Expense</Text>
+      <Text style={styles.title}>{t('addExpense.title')}</Text>
 
-      <Text style={styles.label}>Amount *</Text>
+      <Text style={styles.label}>{t('addExpense.amountRequired')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="0.00"
+        placeholder={t('addExpense.amountPlaceholder')}
         value={amount}
         onChangeText={setAmount}
         keyboardType="decimal-pad"
       />
 
-      <Text style={styles.label}>Description *</Text>
+      <Text style={styles.label}>{t('addExpense.descriptionRequired')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="What did you spend on?"
+        placeholder={t('addExpense.descriptionPlaceholder')}
         value={description}
         onChangeText={setDescription}
         multiline
       />
 
-      <Text style={styles.label}>Category</Text>
+      <Text style={styles.label}>{t('addExpense.category')}</Text>
       <TouchableOpacity
         style={styles.categoryButton}
         onPress={() => setShowCategories(!showCategories)}
       >
-        <Text style={styles.categoryButtonText}>{category}</Text>
+        <Text style={styles.categoryButtonText}>{t(`categories.${category}`)}</Text>
         <Text style={styles.arrow}>{showCategories ? '▲' : '▼'}</Text>
       </TouchableOpacity>
 
@@ -136,7 +152,7 @@ export default function AddExpenseScreen({ navigation }) {
                   category === cat && styles.categoryItemTextSelected,
                 ]}
               >
-                {cat}
+                {t(`categories.${cat}`)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -151,7 +167,7 @@ export default function AddExpenseScreen({ navigation }) {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.saveButtonText}>Save Expense</Text>
+          <Text style={styles.saveButtonText}>{t('addExpense.saveExpense')}</Text>
         )}
       </TouchableOpacity>
     </View>
@@ -240,3 +256,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

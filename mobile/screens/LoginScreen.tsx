@@ -11,6 +11,8 @@ import {
 import { useMutation } from '@apollo/client';
 import { gql } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 
 const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
@@ -38,23 +40,36 @@ const REGISTER_MUTATION = gql`
   }
 `;
 
-export default function LoginScreen({ navigation }) {
-  const [isLogin, setIsLogin] = useState(true);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+type RootStackParamList = {
+  Login: undefined;
+  Main: undefined;
+};
+
+type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+
+interface LoginScreenProps {
+  navigation: LoginScreenNavigationProp;
+  onLogin?: () => void;
+}
+
+export default function LoginScreen({ navigation, onLogin }: LoginScreenProps) {
+  const { t } = useTranslation();
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const [login, { loading: loginLoading }] = useMutation(LOGIN_MUTATION);
   const [register, { loading: registerLoading }] = useMutation(REGISTER_MUTATION);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      Alert.alert(t('common.error'), t('auth.fillAllFields'));
       return;
     }
 
     if (!isLogin && !username) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      Alert.alert(t('common.error'), t('auth.fillAllFields'));
       return;
     }
 
@@ -72,21 +87,24 @@ export default function LoginScreen({ navigation }) {
 
       const { token } = result.data[isLogin ? 'login' : 'register'];
       await AsyncStorage.setItem('token', token);
+      if (onLogin) {
+        onLogin();
+      }
       navigation.replace('Main');
-    } catch (error) {
-      Alert.alert('Error', error.message);
+    } catch (error: any) {
+      Alert.alert(t('common.error'), error.message);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Expense Tracker</Text>
-      <Text style={styles.subtitle}>{isLogin ? 'Login' : 'Register'}</Text>
+      <Text style={styles.title}>{t('auth.title')}</Text>
+      <Text style={styles.subtitle}>{isLogin ? t('auth.login') : t('auth.register')}</Text>
 
       {!isLogin && (
         <TextInput
           style={styles.input}
-          placeholder="Username"
+          placeholder={t('auth.username')}
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
@@ -95,7 +113,7 @@ export default function LoginScreen({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder={t('auth.email')}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -104,7 +122,7 @@ export default function LoginScreen({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder={t('auth.password')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -118,15 +136,13 @@ export default function LoginScreen({ navigation }) {
         {loginLoading || registerLoading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>{isLogin ? 'Login' : 'Register'}</Text>
+          <Text style={styles.buttonText}>{isLogin ? t('auth.login') : t('auth.register')}</Text>
         )}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
         <Text style={styles.switchText}>
-          {isLogin
-            ? "Don't have an account? Register"
-            : 'Already have an account? Login'}
+          {isLogin ? t('auth.noAccount') : t('auth.haveAccount')}
         </Text>
       </TouchableOpacity>
     </View>

@@ -1,0 +1,95 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "apply": "Aplicar",
+    "clear": "Limpiar",
+    "filter": "Filtrar",
+    "all": "Todo",
+    "error": "Error",
+    "success": "Éxito",
+    "loading": "Cargando..."
+  },
+  "auth": {
+    "title": "Gestor de Gastos",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "noAccount": "¿No tienes una cuenta? Regístrate",
+    "haveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+    "fillAllFields": "Por favor completa todos los campos requeridos"
+  },
+  "expenses": {
+    "title": "Gastos",
+    "addExpense": "Agregar Gasto",
+    "add": "+ Agregar",
+    "noExpenses": "Aún no hay gastos",
+    "addFirstExpense": "Toca + Agregar para crear tu primer gasto",
+    "deleteExpense": "Eliminar Gasto",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar este gasto?",
+    "expenseDeleted": "Gasto eliminado",
+    "expenseDeletedOffline": "Gasto eliminado (se sincronizará cuando esté en línea)",
+    "errorLoading": "Error al cargar gastos",
+    "filtersActive": "Filtros activos"
+  },
+  "addExpense": {
+    "title": "Agregar Gasto",
+    "amount": "Cantidad",
+    "amountRequired": "Cantidad *",
+    "description": "Descripción",
+    "descriptionRequired": "Descripción *",
+    "category": "Categoría",
+    "amountPlaceholder": "0.00",
+    "descriptionPlaceholder": "¿En qué gastaste?",
+    "saveExpense": "Guardar Gasto",
+    "expenseSaved": "¡Gasto guardado!",
+    "expenseSavedOffline": "Gasto guardado sin conexión (se sincronizará cuando esté en línea)",
+    "validAmount": "Por favor ingresa una cantidad válida"
+  },
+  "summary": {
+    "title": "Resumen Mensual",
+    "totalExpenses": "Gastos Totales",
+    "byCategoryPie": "Por Categoría (Gráfico Circular)",
+    "byCategoryBar": "Por Categoría (Gráfico de Barras)",
+    "categoryBreakdown": "Desglose por Categoría",
+    "noExpensesMonth": "No hay gastos para este mes",
+    "errorLoading": "Error al cargar el resumen"
+  },
+  "filter": {
+    "title": "Filtrar Gastos",
+    "category": "Categoría",
+    "dateRange": "Rango de Fechas",
+    "dateHint": "Nota: La implementación completa del selector de fechas requeriría bibliotecas adicionales"
+  },
+  "categories": {
+    "Food": "Comida",
+    "Transport": "Transporte",
+    "Shopping": "Compras",
+    "Bills": "Facturas",
+    "Entertainment": "Entretenimiento",
+    "Healthcare": "Salud",
+    "Education": "Educación",
+    "Travel": "Viajes",
+    "Other": "Otro"
+  },
+  "tabs": {
+    "expenses": "Gastos",
+    "summary": "Resumen"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar Idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "french": "Francés",
+    "german": "Alemán",
+    "dutch": "Holandés"
+  }
+}

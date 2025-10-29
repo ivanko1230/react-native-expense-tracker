@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   ScrollView,
 } from 'react-native';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { ExpenseFilters } from '../types';
 
 const CATEGORIES = [
   'Food',
@@ -19,18 +21,38 @@ const CATEGORIES = [
   'Education',
   'Travel',
   'Other',
-];
+] as const;
 
-export default function FilterModal({ visible, onClose, onApply, currentFilters }) {
-  const [selectedCategory, setSelectedCategory] = useState(currentFilters?.category || '');
-  const [startDate, setStartDate] = useState(
+interface FilterModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onApply: (filters: ExpenseFilters) => void;
+  currentFilters?: ExpenseFilters;
+}
+
+export default function FilterModal({ visible, onClose, onApply, currentFilters }: FilterModalProps) {
+  const { t } = useTranslation();
+  const [selectedCategory, setSelectedCategory] = useState<string>(currentFilters?.category || '');
+  const [startDate, setStartDate] = useState<Date>(
     currentFilters?.startDate ? new Date(currentFilters.startDate) : startOfMonth(new Date())
   );
-  const [endDate, setEndDate] = useState(
+  const [endDate, setEndDate] = useState<Date>(
     currentFilters?.endDate ? new Date(currentFilters.endDate) : endOfMonth(new Date())
   );
 
-  const handleApply = () => {
+  useEffect(() => {
+    if (currentFilters) {
+      setSelectedCategory(currentFilters.category || '');
+      if (currentFilters.startDate) {
+        setStartDate(new Date(currentFilters.startDate));
+      }
+      if (currentFilters.endDate) {
+        setEndDate(new Date(currentFilters.endDate));
+      }
+    }
+  }, [currentFilters]);
+
+  const handleApply = (): void => {
     onApply({
       category: selectedCategory || undefined,
       startDate: format(startDate, 'yyyy-MM-dd'),
@@ -39,7 +61,7 @@ export default function FilterModal({ visible, onClose, onApply, currentFilters 
     onClose();
   };
 
-  const handleClear = () => {
+  const handleClear = (): void => {
     setSelectedCategory('');
     setStartDate(startOfMonth(new Date()));
     setEndDate(endOfMonth(new Date()));
@@ -60,11 +82,11 @@ export default function FilterModal({ visible, onClose, onApply, currentFilters 
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.title}>Filter Expenses</Text>
+          <Text style={styles.title}>{t('filter.title')}</Text>
 
           <ScrollView style={styles.scrollView}>
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Category</Text>
+              <Text style={styles.sectionTitle}>{t('filter.category')}</Text>
               <View style={styles.categoryContainer}>
                 <TouchableOpacity
                   style={[
@@ -79,7 +101,7 @@ export default function FilterModal({ visible, onClose, onApply, currentFilters 
                       !selectedCategory && styles.categoryButtonTextActive,
                     ]}
                   >
-                    All
+                    {t('common.all')}
                   </Text>
                 </TouchableOpacity>
                 {CATEGORIES.map((category) => (
@@ -97,7 +119,7 @@ export default function FilterModal({ visible, onClose, onApply, currentFilters 
                         selectedCategory === category && styles.categoryButtonTextActive,
                       ]}
                     >
-                      {category}
+                      {t(`categories.${category}`)}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -105,22 +127,22 @@ export default function FilterModal({ visible, onClose, onApply, currentFilters 
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Date Range</Text>
+              <Text style={styles.sectionTitle}>{t('filter.dateRange')}</Text>
               <Text style={styles.dateText}>
                 {format(startDate, 'MMM dd, yyyy')} - {format(endDate, 'MMM dd, yyyy')}
               </Text>
               <Text style={styles.dateHint}>
-                Note: Full date picker implementation would require additional libraries
+                {t('filter.dateHint')}
               </Text>
             </View>
           </ScrollView>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
-              <Text style={styles.clearButtonText}>Clear</Text>
+              <Text style={styles.clearButtonText}>{t('common.clear')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
-              <Text style={styles.applyButtonText}>Apply</Text>
+              <Text style={styles.applyButtonText}>{t('common.apply')}</Text>
             </TouchableOpacity>
           </View>
         </View>

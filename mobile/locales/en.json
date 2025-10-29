@@ -1,0 +1,95 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "apply": "Apply",
+    "clear": "Clear",
+    "filter": "Filter",
+    "all": "All",
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading..."
+  },
+  "auth": {
+    "title": "Expense Tracker",
+    "login": "Login",
+    "register": "Register",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "noAccount": "Don't have an account? Register",
+    "haveAccount": "Already have an account? Login",
+    "fillAllFields": "Please fill in all required fields"
+  },
+  "expenses": {
+    "title": "Expenses",
+    "addExpense": "Add Expense",
+    "add": "+ Add",
+    "noExpenses": "No expenses yet",
+    "addFirstExpense": "Tap + Add to create your first expense",
+    "deleteExpense": "Delete Expense",
+    "confirmDelete": "Are you sure you want to delete this expense?",
+    "expenseDeleted": "Expense deleted",
+    "expenseDeletedOffline": "Expense deleted (will sync when online)",
+    "errorLoading": "Error loading expenses",
+    "filtersActive": "Filters active"
+  },
+  "addExpense": {
+    "title": "Add Expense",
+    "amount": "Amount",
+    "amountRequired": "Amount *",
+    "description": "Description",
+    "descriptionRequired": "Description *",
+    "category": "Category",
+    "amountPlaceholder": "0.00",
+    "descriptionPlaceholder": "What did you spend on?",
+    "saveExpense": "Save Expense",
+    "expenseSaved": "Expense saved!",
+    "expenseSavedOffline": "Expense saved offline (will sync when online)",
+    "validAmount": "Please enter a valid amount"
+  },
+  "summary": {
+    "title": "Monthly Summary",
+    "totalExpenses": "Total Expenses",
+    "byCategoryPie": "By Category (Pie Chart)",
+    "byCategoryBar": "By Category (Bar Chart)",
+    "categoryBreakdown": "Category Breakdown",
+    "noExpensesMonth": "No expenses for this month",
+    "errorLoading": "Error loading summary"
+  },
+  "filter": {
+    "title": "Filter Expenses",
+    "category": "Category",
+    "dateRange": "Date Range",
+    "dateHint": "Note: Full date picker implementation would require additional libraries"
+  },
+  "categories": {
+    "Food": "Food",
+    "Transport": "Transport",
+    "Shopping": "Shopping",
+    "Bills": "Bills",
+    "Entertainment": "Entertainment",
+    "Healthcare": "Healthcare",
+    "Education": "Education",
+    "Travel": "Travel",
+    "Other": "Other"
+  },
+  "tabs": {
+    "expenses": "Expenses",
+    "summary": "Summary"
+  },
+  "settings": {
+ خر  "title": "Settings",
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "french": "French",
+    "german": "German",
+    "dutch": "Dutch"
+  }
+}

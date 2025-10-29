@@ -1,0 +1,95 @@
+{
+  "common": {
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "close": "Sluiten",
+    "apply": "Toepassen",
+    "clear": "Wissen",
+    "filter": "Filter",
+    "all": "Alles",
+    "error": "Fout",
+    "success": "Succes",
+    "loading": "Laden..."
+  },
+  "auth": {
+    "title": "Uitgavenbeheerder",
+    "login": "Inloggen",
+    "register": "Registreren",
+    "username": "Gebruikersnaam",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "noAccount": "Heeft u geen account? Registreren",
+    "haveAccount": "Heeft u al een account? Inloggen",
+    "fillAllFields": "Vul alstublieft alle vereiste velden in"
+  },
+  "expenses": {
+    "title": "Uitgaven",
+    "addExpense": "Uitgave Toevoegen",
+    "add": "+ Toevoegen",
+    "noExpenses": "Nog geen uitgaven",
+    "addFirstExpense": "Tik op + Toevoegen om uw eerste uitgave te maken",
+    "deleteExpense": "Uitgave Verwijderen",
+    "confirmDelete": "Weet u zeker dat u deze uitgave wilt verwijderen?",
+    "expenseDeleted": "Uitgave verwijderd",
+    "expenseDeletedOffline": "Uitgave verwijderd (wordt online gesynchroniseerd)",
+    "errorLoading": "Fout bij het laden van uitgaven",
+    "filtersActive": "Filters actief"
+  },
+  "addExpense": {
+    "title": "Uitgave Toevoegen",
+    "amount": "Bedrag",
+    "amountRequired": "Bedrag *",
+    "description": "Beschrijving",
+    "descriptionRequired": "Beschrijving *",
+    "category": "Categorie",
+    "amountPlaceholder": "0.00",
+    "descriptionPlaceholder": "Waar heeft u aan uitgegeven?",
+    "saveExpense": "Uitgave Opslaan",
+    "expenseSaved": "Uitgave opgeslagen!",
+    "expenseSavedOffline": "Uitgave offline opgeslagen (wordt online gesynchroniseerd)",
+    "validAmount": "Voer alstublieft een geldig bedrag in"
+  },
+  "summary": {
+    "title": "Maandelijks Overzicht",
+    "totalExpenses": "Totale Uitgaven",
+    "byCategoryPie": "Per Categorie (Cirkeldiagram)",
+    "byCategoryBar": "Per Categorie (Staafdiagram)",
+    "categoryBreakdown": "Uitsplitsing per Categorie",
+    "noExpensesMonth": "Geen uitgaven voor deze maand",
+    "errorLoading": "Fout bij het laden van het overzicht"
+  },
+  "filter": {
+    "title": "Uitgaven Filteren",
+    "category": "Categorie",
+    "dateRange": "Datumbereik",
+    "dateHint": "Opmerking: Volledige implementatie van de datumkiezer zou aanvullende bibliotheken vereisen"
+  },
+  "categories": {
+    "Food": "Voedsel",
+    "Transport": "Vervoer",
+    "Shopping": "Winkelen",
+    "Bills": "Rekeningen",
+    "Entertainment": "Vermaak",
+    "Healthcare": "Gezondheidszorg",
+    "Education": "Onderwijs",
+    "Travel": "Reizen",
+    "Other": "Anders"
+  },
+  "tabs": {
+    "expenses": "Uitgaven",
+    "summary": "Overzicht"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "language": "Taal",
+    "selectLanguage": "Taal Selecteren",
+    "english": "Engels",
+    "spanish": "Spaans",
+    "french": "Frans",
+    "german": "Duits",
+    "dutch": "Nederlands"
+  }
+}

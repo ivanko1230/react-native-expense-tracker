@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GET_EXPENSES, DELETE_EXPENSE } from '../services/graphql';
 import { format } from 'date-fns';
 import { isOnline, subscribeToNetworkStatus } from '../utils/networkUtils';
@@ -19,12 +20,28 @@ import {
 } from '../services/storageService';
 import { syncAll } from '../services/syncService';
 import FilterModal from '../components/FilterModal';
+import LanguageSelector from '../components/LanguageSelector';
+import { Expense, ExpenseFilters } from '../types';
+import { useTranslation } from 'react-i18next';
 
-export default function ExpenseListScreen({ navigation }) {
-  const [isNetworkOnline, setIsNetworkOnline] = useState(true);
-  const [localExpenses, setLocalExpenses] = useState([]);
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  const [filters, setFilters] = useState({});
+type RootStackParamList = {
+  Expenses: undefined;
+  AddExpense: undefined;
+};
+
+type ExpenseListScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Expenses'>;
+
+interface ExpenseListScreenProps {
+  navigation: ExpenseListScreenNavigationProp;
+}
+
+export default function ExpenseListScreen({ navigation }: ExpenseListScreenProps) {
+  const { t, i18n } = useTranslation();
+  const [isNetworkOnline, setIsNetworkOnline] = useState<boolean>(true);
+  const [localExpenses, setLocalExpenses] = useState<Expense[]>([]);
+  const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
+  const [showLanguageModal, setShowLanguageModal] = useState<boolean>(false);
+  const [filters, setFilters] = useState<ExpenseFilters>({});
   const client = useApolloClient();
 
   const { data, loading, error, refetch } = useQuery(GET_EXPENSES, {
@@ -35,7 +52,7 @@ export default function ExpenseListScreen({ navigation }) {
       startDate: filters.startDate,
       endDate: filters.endDate,
     },
-    onCompleted: async (data) => {
+    onCompleted: async (data: any) => {
       if (data?.expenses) {
         await saveExpensesLocally(data.expenses);
       }
@@ -44,7 +61,7 @@ export default function ExpenseListScreen({ navigation }) {
 
   const [deleteExpense] = useMutation(DELETE_EXPENSE, {
     refetchQueries: [{ query: GET_EXPENSES }],
-    onError: async (error) => {
+    onError: async (error: any) => {
       // If offline, delete locally
       if (!isNetworkOnline) {
         const localExp = localExpenses.find((e) => e.id === error.variables?.id);
@@ -60,7 +77,7 @@ export default function ExpenseListScreen({ navigation }) {
 
   useEffect(() => {
     checkNetworkAndLoadData();
-    const unsubscribe = subscribeToNetworkStatus(async (online) => {
+    const unsubscribe = subscribeToNetworkStatus(async (online: boolean) => {
       setIsNetworkOnline(online);
       if (online) {
         await syncAll(client);
@@ -72,7 +89,7 @@ export default function ExpenseListScreen({ navigation }) {
     return unsubscribe;
   }, []);
 
-  const checkNetworkAndLoadData = async () => {
+  const checkNetworkAndLoadData = async (): Promise<void> => {
     const online = await isOnline();
     setIsNetworkOnline(online);
     if (!online) {
@@ -80,13 +97,13 @@ export default function ExpenseListScreen({ navigation }) {
     }
   };
 
-  const loadLocalData = async () => {
+  const loadLocalData = async (): Promise<void> => {
     const local = await getExpensesLocally();
     setLocalExpenses(local);
   };
 
   // Apply filters to local expenses when offline
-  const getFilteredExpenses = (expenseList) => {
+  const getFilteredExpenses = (expenseList: Expense[]): Expense[] => {
     let filtered = expenseList;
     
     if (filters.category) {
@@ -95,13 +112,13 @@ export default function ExpenseListScreen({ navigation }) {
     
     if (filters.startDate) {
       filtered = filtered.filter(
-        (exp) => new Date(exp.date) >= new Date(filters.startDate)
+        (exp) => new Date(exp.date) >= new Date(filters.startDate!)
       );
     }
     
     if (filters.endDate) {
       filtered = filtered.filter(
-        (exp) => new Date(exp.date) <= new Date(filters.endDate)
+        (exp) => new Date(exp.date) <= new Date(filters.endDate!)
       );
     }
     
@@ -112,27 +129,27 @@ export default function ExpenseListScreen({ navigation }) {
     ? (data?.expenses || [])
     : getFilteredExpenses(localExpenses);
 
-  const handleDelete = (id) => {
-    Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
-      { text: 'Cancel', style: 'cancel' },
+  const handleDelete = (id: string): void => {
+    Alert.alert(t('expenses.deleteExpense'), t('expenses.confirmDelete'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             if (isNetworkOnline) {
               await deleteExpense({ variables: { id } });
-              Alert.alert('Success', 'Expense deleted');
+              Alert.alert(t('common.success'), t('expenses.expenseDeleted'));
             } else {
               // Offline deletion
               await addDeletedExpense(id);
               const updated = expenses.filter((e) => e.id !== id);
               setLocalExpenses(updated);
               await saveExpensesLocally(updated);
-              Alert.alert('Success', 'Expense deleted (will sync when online)');
+              Alert.alert(t('common.success'), t('expenses.expenseDeletedOffline'));
             }
-          } catch (err) {
-            Alert.alert('Error', err.message);
+          } catch (err: any) {
+            Alert.alert(t('common.error'), err.message);
           }
         },
       },
@@ -150,7 +167,7 @@ export default function ExpenseListScreen({ navigation }) {
   if (error) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <Text style={styles.errorText}>Error loading expenses</Text>
+        <Text style={styles.errorText}>{t('expenses.errorLoading')}</Text>
         <Text style={styles.errorSubtext}>{error.message}</Text>
       </View>
     );
@@ -159,36 +176,47 @@ export default function ExpenseListScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Expenses</Text>
+        <Text style={styles.title}>{t('expenses.title')}</Text>
         <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.languageButton}
+            onPress={() => setShowLanguageModal(true)}
+          >
+            <Text style={styles.languageButtonText}>🌐</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.filterButton}
             onPress={() => setShowFilterModal(true)}
           >
-            <Text style={styles.filterButtonText}>Filter</Text>
+            <Text style={styles.filterButtonText}>{t('common.filter')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => navigation.navigate('AddExpense')}
           >
-            <Text style={styles.addButtonText}>+ Add</Text>
+            <Text style={styles.addButtonText}>{t('expenses.add')}</Text>
           </TouchableOpacity>
         </View>
       </View>
       
       {Object.keys(filters).length > 0 && (
         <View style={styles.activeFilters}>
-          <Text style={styles.activeFiltersText}>Filters active</Text>
+          <Text style={styles.activeFiltersText}>{t('expenses.filtersActive')}</Text>
           <TouchableOpacity onPress={() => setFilters({})}>
-            <Text style={styles.clearFiltersText}>Clear</Text>
+            <Text style={styles.clearFiltersText}>{t('common.clear')}</Text>
           </TouchableOpacity>
         </View>
       )}
 
+      <LanguageSelector
+        visible={showLanguageModal}
+        onClose={() => setShowLanguageModal(false)}
+      />
+
       <FilterModal
         visible={showFilterModal}
         onClose={() => setShowFilterModal(false)}
-        onApply={(newFilters) => {
+        onApply={(newFilters: ExpenseFilters) => {
           setFilters(newFilters);
           if (isNetworkOnline) {
             refetch();
@@ -199,14 +227,14 @@ export default function ExpenseListScreen({ navigation }) {
 
       {expenses.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No expenses yet</Text>
-          <Text style={styles.emptySubtext}>Tap + Add to create your first expense</Text>
+          <Text style={styles.emptyText}>{t('expenses.noExpenses')}</Text>
+          <Text style={styles.emptySubtext}>{t('expenses.addFirstExpense')}</Text>
         </View>
       ) : (
         <FlatList
           data={expenses}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          renderItem={({ item }: { item: Expense }) => (
             <TouchableOpacity
               style={styles.expenseItem}
               onLongPress={() => handleDelete(item.id)}
@@ -214,7 +242,7 @@ export default function ExpenseListScreen({ navigation }) {
               <View style={styles.expenseInfo}>
                 <Text style={styles.expenseDescription}>{item.description}</Text>
                 <View style={styles.expenseMeta}>
-                  <Text style={styles.expenseCategory}>{item.category}</Text>
+                  <Text style={styles.expenseCategory}>{t(`categories.${item.category}`)}</Text>
                   <Text style={styles.expenseDate}>
                     {format(new Date(item.date), 'MMM dd, yyyy')}
                   </Text>
@@ -248,6 +276,14 @@ const styles = StyleSheet.create({
   headerButtons: {
     flexDirection: 'row',
     gap: 10,
+    alignItems: 'center',
+  },
+  languageButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  languageButtonText: {
+    fontSize: 20,
   },
   filterButton: {
     backgroundColor: '#f0f0f0',
@@ -265,7 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     backgroundColor: '#e8f4f8',
     borderBottomWidth: 1,

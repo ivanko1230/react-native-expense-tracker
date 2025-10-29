@@ -43,3 +43,14 @@ export interface ExpenseFilters {
   startDate?: string;
   endDate?: string;
 }
+
+export type RootStackParamList = {
+  Login: undefined;
+  Main: undefined;
+  AddExpense: undefined;
+};
+
+export type MainTabParamList = {
+  Expenses: undefined;
+  Summary: undefined;
+};
