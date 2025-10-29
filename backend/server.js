@@ -21,14 +21,13 @@ mongoose
 
 const typeDefs = require('./graphql/typeDefs');
 const resolvers = require('./graphql/resolvers');
+const { createContext } = require('./middleware/auth');
 
 // Apollo Server
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    return { req };
-  },
+  context: createContext,
 });
 
 async function startServer() {

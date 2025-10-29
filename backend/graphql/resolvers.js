@@ -2,23 +2,10 @@ const User = require('../models/User');
 const Expense = require('../models/Expense');
 const jwt = require('jsonwebtoken');
 
-// Helper function to get user from token
-const getUserFromToken = async (req) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return null;
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return await User.findById(decoded.userId);
-  } catch (error) {
-    return null;
-  }
-};
-
 const resolvers = {
   Query: {
     expenses: async (parent, args, context) => {
-      const user = await getUserFromToken(context.req);
+      const user = context.user;
       if (!user) throw new Error('Authentication required');
 
       const query = { userId: user._id };
@@ -43,7 +30,7 @@ const resolvers = {
     },
 
     expense: async (parent, args, context) => {
-      const user = await getUserFromToken(context.req);
+      const user = context.user;
       if (!user) throw new Error('Authentication required');
 
       const expense = await Expense.findById(args.id);
@@ -54,7 +41,7 @@ const resolvers = {
     },
 
     monthlySummary: async (parent, args, context) => {
-      const user = await getUserFromToken(context.req);
+      const user = context.user;
       if (!user) throw new Error('Authentication required');
 
       const startDate = new Date(args.year, args.month - 1, 1);
@@ -83,7 +70,7 @@ const resolvers = {
     },
 
     me: async (parent, args, context) => {
-      const user = await getUserFromToken(context.req);
+      const user = context.user;
       if (!user) throw new Error('Authentication required');
       return user;
     },
@@ -158,7 +145,7 @@ const resolvers = {
     },
 
     createExpense: async (parent, args, context) => {
-      const user = await getUserFromToken(context.req);
+      const user = context.user;
       if (!user) throw new Error('Authentication required');
 
       const expense = new Expense({
@@ -174,7 +161,7 @@ const resolvers = {
     },
 
     updateExpense: async (parent, args, context) => {
-      const user = await getUserFromToken(context.req);
+      const user = context.user;
       if (!user) throw new Error('Authentication required');
 
       const expense = await Expense.findById(args.id);
@@ -193,7 +180,7 @@ const resolvers = {
     },
 
     deleteExpense: async (parent, args, context) => {
-      const user = await getUserFromToken(context.req);
+      const user = context.user;
       if (!user) throw new Error('Authentication required');
 
       const expense = await Expense.findById(args.id);
