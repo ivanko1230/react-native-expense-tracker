@@ -19,25 +19,8 @@ mongoose
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-// GraphQL will be added in next commit
-const typeDefs = `
-  type Query {
-    _empty: String
-  }
-  
-  type Mutation {
-    _empty: String
-  }
-`;
-
-const resolvers = {
-  Query: {
-    _empty: () => null,
-  },
-  Mutation: {
-    _empty: () => null,
-  },
-};
+const typeDefs = require('./graphql/typeDefs');
+const resolvers = require('./graphql/resolvers');
 
 // Apollo Server
 const server = new ApolloServer({
