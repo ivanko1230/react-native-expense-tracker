@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { useMutation } from '@apollo/client';
+import { CREATE_EXPENSE } from '../services/graphql';
 
 const CATEGORIES = [
   'Food',
@@ -26,7 +29,11 @@ export default function AddExpenseScreen({ navigation }) {
   const [category, setCategory] = useState('Other');
   const [showCategories, setShowCategories] = useState(false);
 
-  const handleSave = () => {
+  const [createExpense, { loading }] = useMutation(CREATE_EXPENSE, {
+    refetchQueries: ['GetExpenses'],
+  });
+
+  const handleSave = async () => {
     if (!amount || !description) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
@@ -38,9 +45,20 @@ export default function AddExpenseScreen({ navigation }) {
       return;
     }
 
-    // TODO: Save expense via GraphQL mutation in next commit
-    Alert.alert('Success', 'Expense saved!');
-    navigation.goBack();
+    try {
+      await createExpense({
+        variables: {
+          amount: amountValue,
+          description,
+          category,
+          date: new Date().toISOString(),
+        },
+      });
+      Alert.alert('Success', 'Expense saved!');
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
   };
 
   return (
@@ -101,8 +119,16 @@ export default function AddExpenseScreen({ navigation }) {
         </View>
       )}
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Save Expense</Text>
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={handleSave}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.saveButtonText}>Save Expense</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

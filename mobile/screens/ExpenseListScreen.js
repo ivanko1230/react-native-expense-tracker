@@ -5,11 +5,55 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_EXPENSES, DELETE_EXPENSE } from '../services/graphql';
+import { format } from 'date-fns';
 
 export default function ExpenseListScreen({ navigation }) {
-  // Placeholder data - will be replaced with GraphQL query in next commit
-  const expenses = [];
+  const { data, loading, error, refetch } = useQuery(GET_EXPENSES);
+  const [deleteExpense] = useMutation(DELETE_EXPENSE, {
+    refetchQueries: [{ query: GET_EXPENSES }],
+  });
+
+  const expenses = data?.expenses || [];
+
+  const handleDelete = (id) => {
+    Alert.alert('Delete Expense', 'Are you sure you want to delete this expense?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteExpense({ variables: { id } });
+            Alert.alert('Success', 'Expense deleted');
+          } catch (err) {
+            Alert.alert('Error', err.message);
+          }
+        },
+      },
+    ]);
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.errorText}>Error loading expenses</Text>
+        <Text style={styles.errorSubtext}>{error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -33,14 +77,24 @@ export default function ExpenseListScreen({ navigation }) {
           data={expenses}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.expenseItem}>
+            <TouchableOpacity
+              style={styles.expenseItem}
+              onLongPress={() => handleDelete(item.id)}
+            >
               <View style={styles.expenseInfo}>
                 <Text style={styles.expenseDescription}>{item.description}</Text>
-                <Text style={styles.expenseCategory}>{item.category}</Text>
+                <View style={styles.expenseMeta}>
+                  <Text style={styles.expenseCategory}>{item.category}</Text>
+                  <Text style={styles.expenseDate}>
+                    {format(new Date(item.date), 'MMM dd, yyyy')}
+                  </Text>
+                </View>
               </View>
               <Text style={styles.expenseAmount}>${item.amount.toFixed(2)}</Text>
-            </View>
+            </TouchableOpacity>
           )}
+          refreshing={loading}
+          onRefresh={refetch}
         />
       )}
     </View>
@@ -112,13 +166,38 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 5,
   },
+  expenseMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+  },
   expenseCategory: {
     fontSize: 14,
     color: '#666',
+    marginRight: 10,
+  },
+  expenseDate: {
+    fontSize: 12,
+    color: '#999',
   },
   expenseAmount: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#007AFF',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff3b30',
+    marginBottom: 10,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
